@@ -10,6 +10,7 @@
 import express from 'express'
 import cors from 'cors';
 import helmet from 'helmet';
+import taskRouter from './routes/tasks.js'
 
 const app = express();
 
@@ -30,6 +31,9 @@ app.use(express.json());
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', service: 'study-os-api' })
 })
+
+// Mount the task router — prefix applied here
+app.use('/api/v1/tasks', taskRouter)
 
 app.get('/api/v1/info', (req, res) => {
     res.json({ 
