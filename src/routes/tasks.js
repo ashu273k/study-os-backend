@@ -5,5 +5,7 @@ const router = Router();
 
 router.get('/', taskController.getAllTasks);
 router.get('/:id', taskController.getTaskById)
+router.post('/', taskController.createTask)
+router.delete('/:id', taskController.deleteTask)
 
 export default router;

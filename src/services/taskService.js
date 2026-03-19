@@ -1,17 +1,27 @@
-const tasks = [
-    { id: 1, title: 'Read chapter 3', subject: 'Math', completed: false },
-    { id: 2, title: 'Write essay draft', subject: 'English', completed: true }
-]
+import * as taskRepository from '../repositories/taskRepository.js';
 
-export const getAllTasks = (filter = {}) => {
-    if (filter === undefined) {
-        return tasks
+export const getAllTasks = async(userId, filter = {}) => {
+    const tasks =  await taskRepository.findAllByUserId(userId, filter);
+
+    if (filter.completed !== undefined) {
+        return tasks.filter(task => 
+            filter.completed
+                ? task.status === 'completed'
+                : task.status !== 'completed'
+        );
     }
 
-    return tasks.filter(task => task.completed === filter.completed);
+    return tasks;
 }
 
-export const getTaskById = (id) => {
-    return tasks.find(task => task.id === id) ?? null
+export const getTaskById = async (id, userId) => {
+    return taskRepository.findById(id, userId);
 }
 
+export const createTask = async (userId, data) => {
+    return taskRepository.createTask(userId, data);
+}
+
+export const deleteTask = async (id, userId) => {
+    return taskRepository.deleteTask(id, userId)
+}
