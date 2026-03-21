@@ -1,7 +1,5 @@
 import * as taskService from '../services/taskService.js'
 
-// Temporary — will be replaced by real auth middleware in Stage 3
-const TEST_USER_ID = 'e258a24d-0bcc-4c23-8d01-3ad01a008da5';
 
 export const getAllTasks = async (req, res) => {
     try {
@@ -11,7 +9,7 @@ export const getAllTasks = async (req, res) => {
             filter.completed = req.query.completed === 'true';
         }
 
-        const tasks = await taskService.getAllTasks(TEST_USER_ID, filter);
+        const tasks = await taskService.getAllTasks(req.user.userId, filter);
         res.status(200).json({
             success: true,
             data: tasks
@@ -27,7 +25,7 @@ export const getAllTasks = async (req, res) => {
 
 export const getTaskById = async (req, res) => {
     try {
-        const task = await taskService.getTaskById(req.params.id, TEST_USER_ID);
+        const task = await taskService.getTaskById(req.params.id, req.user.userId);
 
         if (!task) {
             return res.status(404).json({
@@ -50,7 +48,7 @@ export const getTaskById = async (req, res) => {
 
 export const createTask = async (req, res) => {
     try {
-        const task = await taskService.createTask(TEST_USER_ID, req.body);
+        const task = await taskService.createTask(req.user.userId, req.body);
         res.status(201).json({ success: true, data: task });
     } catch (error) {
         console.error('createTask error:', error);
@@ -60,7 +58,7 @@ export const createTask = async (req, res) => {
 
 export const deleteTask = async (req, res) => {
     try {
-        const deleted = await taskService.deleteTask(req.params.id, TEST_USER_ID)
+        const deleted = await taskService.deleteTask(req.params.id, req.user.userId)
 
         if (!deleted) {
             return res.status(404).json({

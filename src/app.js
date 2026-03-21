@@ -11,12 +11,13 @@ import express from 'express'
 import cors from 'cors';
 import helmet from 'helmet';
 import taskRouter from './routes/tasks.js'
+import authRouter from './routes/auth.js'
+import authenticate from './middleware/authenticate.js';
 
 const app = express();
 
 // helmet for protecting our api from malicious activity
 app.use(helmet());
-// cors for the cors policy
 app.use(cors());
 
 /**
@@ -32,8 +33,8 @@ app.get('/health', (req, res) => {
     res.json({ status: 'ok', service: 'study-os-api' })
 })
 
-// Mount the task router — prefix applied here
-app.use('/api/v1/tasks', taskRouter)
+app.use('/api/v1/auth', authRouter)
+app.use('/api/v1/tasks', authenticate,  taskRouter)
 
 app.get('/api/v1/info', (req, res) => {
     res.json({ 
