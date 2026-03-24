@@ -25,3 +25,13 @@ export const createTask = async (userId, data) => {
 export const deleteTask = async (id, userId) => {
     return taskRepository.deleteTask(id, userId)
 }
+
+export const updateTask = async (id, userId, fields) => {
+    if (fields.status) {
+        const validStatuses = ['pending', 'in_progress', 'completed'];
+        if (!validStatuses.includes(fields.status)) {
+            throw new Error('INVALID_STATUS');
+        }
+    }
+    return taskRepository.updateTask(id, userId, fields)
+}

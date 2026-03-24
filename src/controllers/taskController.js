@@ -80,6 +80,30 @@ export const deleteTask = async (req, res) => {
     }
 }
 
+export const updateTask = async (req, res) => {
+    try {
+        const updated = await taskService.updateTask(
+            req.params.id,
+            req.user.userId,
+            req.body
+        )
+
+        if (!updated) {
+            return res.status(404).json({ success: false, message: 'Task not found' });
+        }
+
+        res.status(200).json({ success: true, data: updated})
+    } catch (error) {
+        if (error.message === 'INVALID_STATUS') {
+            return res.status(400).json({
+                success: false,
+                message: 'Status must be pending, in_progress, or completed'
+            })
+        }
+        console.error('UpdateTask error: ', error)
+        res.status(500).json({success: false, message: 'Failed to update task'})
+    }
+}
 /**
  * First, the consistent response shape — every response has success and either data or message. Your frontend can always rely on this shape. This is a professional habit.
 Second, the try/catch on every handler. Services will eventually hit a database. Databases fail. Never let an unhandled error crash your server.

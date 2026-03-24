@@ -6,9 +6,10 @@ export const findAllByUserId = async (userId, filter = {}) => {
     const params = [userId]
 
     if (filter.completed !== undefined) {
-
-        params.push(filter.completed ? 'completed' : 'pending');
-        sql += ` AND status = $${params.length}`;
+        params.push('completed');
+        sql += filter.completed
+            ? ` AND status = $${params.length}`
+            : ` AND status != $${params.length}`;
     }
 
     sql += ` ORDER BY created_at DESC`;
@@ -42,5 +43,25 @@ export const deleteTask = async(id, userId) => {
         WHERE id = $1 AND user_id = $2
         RETURNING *`, [id, userId]
     );
+    return result.rows[0] ?? null;
+}
+
+export const updateTask = async (id, userId, fields) => {
+    const allowed = ['title', 'description', 'subject', 'due_date', 'status'];
+    const updates = Object.keys(fields).filter(k => allowed.includes(k));
+
+    if (updates.length === 0) return null;
+
+    const setClauses = updates.map((key, i) => `${key} = $${i+3}`)
+    const values = updates.map(k => fields[k]);
+
+    const result = await query(
+        `UPDATE tasks
+        SET ${setClauses.join(', ')}, updated_at = NOW()
+        WHERE id = $1 AND user_id = $2
+        RETURNING *`,
+        [id, userId, ...values]
+    )
+    
     return result.rows[0] ?? null;
 }

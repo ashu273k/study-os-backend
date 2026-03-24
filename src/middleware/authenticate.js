@@ -10,12 +10,7 @@ const authenticate = (req, res, next) => {
         })
     }
 
-    if (password.length < 8) {
-      return res.status(400).json({
-        success: false,
-        message: 'Password must be at least 8 characters'
-      });
-    }
+    
 
     const token = authHeader.replace(/^Bearer\s+/i, '').trim();
 

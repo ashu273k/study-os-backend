@@ -13,6 +13,7 @@ import helmet from 'helmet';
 import taskRouter from './routes/tasks.js'
 import authRouter from './routes/auth.js'
 import authenticate from './middleware/authenticate.js';
+import resourceRouter from './routes/resources.js'
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.get('/health', (req, res) => {
 })
 
 app.use('/api/v1/auth', authRouter)
+app.use('/api/v1/resources', authenticate, resourceRouter)
 app.use('/api/v1/tasks', authenticate,  taskRouter)
 
 app.get('/api/v1/info', (req, res) => {
