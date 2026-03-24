@@ -14,16 +14,24 @@ export const getAllResources = async (userId) => {
 }
 
 export const createResource = async (userId, data) => {
-    if (typeof data.url === 'string' && data.url.trim() !== '') {
-        const normalizedUrl = data.url.trim()
-        if (!isValidHttpUrl(normalizedUrl)) {
-            throw new Error('INVALID_URL')
-        }
-        data.url = normalizedUrl
-    }
+  const { type, url, content } = data;
 
-    return resourceRepository.createResource(userId, data)
-}
+  if (type === 'link') {
+    if (!url || url.trim() === '') {
+      throw new Error('LINK_REQUIRES_URL');
+    }
+    if (!isValidHttpUrl(url.trim())) {
+      throw new Error('INVALID_URL');
+    }
+    data.url = url.trim();
+  }
+
+  if (type === 'note' && (!content || content.trim() === '')) {
+    throw new Error('NOTE_REQUIRES_CONTENT');
+  }
+
+  return resourceRepository.createResource(userId, data);
+};
 
 export const deleteResource = async (id, userId) => {
     return resourceRepository.deleteResource(id, userId)
